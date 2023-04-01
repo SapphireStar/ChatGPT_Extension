@@ -108,6 +108,16 @@
     transition: .2s ease-in-out;
 }
 
+.input-apply{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: rgb(73, 73, 73);
+}
+.input-apply:hover{
+    cursor: pointer;
+}
+
 /* Input Additional Config End */
 
 #templates-container{

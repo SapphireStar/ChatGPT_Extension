@@ -13,10 +13,17 @@
     //输入框的父节点
     let currentInputAreaContainer;
 
+    //新创建的物体
     let currentInputField;
-    let currentSendButton;
+    let currentSendButtonContainer;
     let currentParent;
     let currentTemplates=[];
+    let currentApplyButton;
+
+    //额外设置
+    let outputInDropdown;
+    let toneDropDown;
+    let writingStyleDropdown;
 
     //用户当前选择的模板
     let currentSelectedTemplateWrapper;
@@ -25,6 +32,8 @@
     //NewChat按钮
     let newChatButton;
     
+    //从服务器获得的JSON
+    let templatesJSON;
 
     //监听来自background.js的事件信息，使用观察者模式，监听到事件发送后，分析发送过来的消息，如果type变量为'NEW'，则调用newVideoLoaded
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
@@ -54,7 +63,10 @@
 
             currentInputAreaContainer = document.getElementsByClassName("relative flex h-full flex-1 md:flex-col")[0];
             currentInputField = document.getElementsByClassName("m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0")[0];
-            currentSendButton = document.getElementsByClassName("absolute p-1 rounded-md text-gray-500 bottom-1.5 md:bottom-2.5 hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2")[0];
+            currentSendButton = document.getElementsByClassName("absolute p-1 rounded-md text-gray-500 bottom-1.5 md:bottom-2.5 hover:bg-gray-100 enabled:dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2 disabled:opacity-40")[0];
+            currentSendButtonContainer = document.getElementsByClassName("flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]")[0];
+            
+            
             //标记特殊节点
             otherElement = document.getElementsByClassName("w-full h-32 md:h-48 flex-shrink-0")[0];
             otherElement.id ="original-nodes";
@@ -70,13 +82,26 @@
     }
 
     function addTemplates(parent) {
-        for (let i = 0; i < 20; i++) {
-            const child = initializeTemplateWidget("Template: "+i,"Test Template author","Test Template content dw ad awdaw daw daw daw daw ddaw daw daw dawd awd awd aw",`This is a Test String Formatting:${i}---{replace}, you do not have to response`);
+            let response = fetch('http://localhost:8080',{
+                method:'GET',
+                headers:{
+                    'Origin':'http://127.0.0.1:8080',
+                    'Access-Control-Request-Method':'GET',
+                    'Access-Control-Request-Headers': 'Content-Type, Authorization, Accept',
+                    'Accept': 'application/json',
+                },
+            }).then(response=>response.json())
+            .then(response=>{
+                Object.entries(response).forEach(([key,value])=>{
+                    const child = initializeTemplateWidget(value["title"],value["author"],value["description"],value["content"]);
 
-            parent.appendChild(child);    
-            currentTemplates.push(child); 
+                    parent.appendChild(child);    
+                    currentTemplates.push(child); 
+                });
+            });
+
         }
-    }
+    
 
     //点击newchat后刷新页面
     function refreshPage(){
@@ -99,7 +124,8 @@
 
             currentInputAreaContainer = document.getElementsByClassName("relative flex h-full flex-1 md:flex-col")[0];
             currentInputField = document.getElementsByClassName("m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0")[0];
-            currentSendButton = document.getElementsByClassName("absolute p-1 rounded-md text-gray-500 bottom-1.5 md:bottom-2.5 hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2")[0];
+            currentSendButton = document.getElementsByClassName("absolute p-1 rounded-md text-gray-500 bottom-1.5 md:bottom-2.5 hover:bg-gray-100 enabled:dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2 disabled:opacity-40")[0];
+            currentSendButtonContainer = document.getElementsByClassName("flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]")[0];
             
             InitializeUserInputs();
             InitializeAdditionalConfiguration();
@@ -169,6 +195,13 @@
             }
         }
 
+        if(document.getElementsByClassName("input-apply").length>0){
+            for(let element of document.getElementsByClassName("input-apply")){
+                element.remove();
+            }
+        }
+        
+
     }
     
     //将所有原有的node隐藏
@@ -181,21 +214,32 @@
         
     }
 
+    //初始化应用按钮，当用户按下应用按钮时，将template嵌入到用户的输入中
     function InitializeUserInputs(){
-        currentSendButton.removeEventListener("click",sendMessage);
-        //当用户按下发送按钮时，将template嵌入到用户的输入中
-        currentSendButton.addEventListener("click",sendMessage);
+        currentSendButton.addEventListener("click",destroyAllTemplates);
+        
+        let currentApplyButton = document.createElement("div");
+        currentApplyButton.className = "input-apply";
+        currentApplyButton.addEventListener("click",()=>{
+            if(currentInputField.innerHTML !== ""){
+                console.log(currentSelectedTemplate);
+                let str = currentInputField.innerHTML;
+                currentInputField.value = currentSelectedTemplate.replace(/{replace}/g,str);
+                currentInputField.value = applyDropDown(currentInputField.value);
+                
+            }
+        });
+
+        currentSendButtonContainer.appendChild(currentApplyButton);
+        
     }
 
-    function sendMessage(){
-        if(currentSelectedTemplate){
-            const str = currentInputField.innerHTML;
-            currentInputField.innerHTML = "";
-            currentInputField.innerHTML = currentSelectedTemplate.replace(/{replace}/g,str);
-            console.log(currentInputField.innerHTML);
-            destroyAllTemplates();
-        }
-    }
+    function applyDropDown(content){
+        content+=` Please write the answer in ${outputInDropdown.firstChild.innerHTML}. `;
+        content+=` Please write the answer in a ${toneDropDown.firstChild.innerHTML} tone. `;
+        content+=` Please write the answer in ${writingStyleDropdown.firstChild.innerHTML} style. `;
+        return content;
+    }   
 
     //初始化输入框上方的额外设置
     function InitializeAdditionalConfiguration() {
@@ -223,9 +267,9 @@
             additionalConfigContainer.appendChild(tone);
             additionalConfigContainer.appendChild(wrtingStyle);
 
-            const outputInDropdown = CreateDropdown("English",["English","Chinese"]);
-            const toneDropDown = CreateDropdown("Default",["Emotional","Technically","Happy","Sad"]);
-            const writingStyleDropdown = CreateDropdown("Default",["Poetic","dramatic"]);
+            outputInDropdown = CreateDropdown("English",["English","Chinese"]);
+            toneDropDown = CreateDropdown("Default",["Emotional","Technically","Happy","Sad"]);
+            writingStyleDropdown = CreateDropdown("Default",["Poetic","dramatic"]);
             additionalConfigContainer.appendChild(outputInDropdown);
             additionalConfigContainer.appendChild(toneDropDown);
             additionalConfigContainer.appendChild(writingStyleDropdown);
