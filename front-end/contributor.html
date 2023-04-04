@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contributor</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    
+</head>
+<body>
+
+    <div class="container">
+
+      <div class="content">
+
+        <div class="topic">
+            <label>Topic</label>
+            <select name="Community" class="community">
+              <option value="Copywriting-00ea56f446414284">Copywriting</option>
+              <option value="DevOps-f3e52afbf831197f">DevOps</option>
+              <option value="Generative-AI-b983edfcaa490850">Generative AI</option>
+              <option value="Marketing-cc647f5cf02ffd02">Marketing</option>
+              <option value="OperatingSystems-8a5ca60d957fe707">Operating Systems</option>
+              <option value="Productivity-b5a49cdd0796137a">Productivity</option>
+              <option value="SaaS-84c5d6a7b8e9f0c2">SaaS</option>
+              <option value="SEO-84c5d6a7b8e9f0c1">SEO</option>
+              <option value="Applications-f69b52b4213a6bd3">Software Applications</option>
+              <option value="SoftwareEngineering-f1858b980c341d28">Software Engineering</option>
+              <option value="Unsure-f69c57b424376b23">UNSURE</option>
+            </select>
+            
+        </div>
+
+        <div class="activity">
+            <label>Activity</label>
+            <select name="Category" class="category">    
+              <option value="Accounting">Accounting</option>
+              <option value="call to action">Call to Action</option>
+              <option value="Games">Games</option>
+              <option value="Improve">Improve</option>
+              <option value="keywords">Keywords</option>
+              <option value="marketing">Marketing</option>
+              <option value="Outreach">Outreach</option>
+              <option value="Persuade">Persuade</option>
+              <option value="Positioning">Positioning</option>
+              <option value="Product Description">Product Description</option>
+              <option value="Products">Products</option>
+              <option value="Research">Research</option>
+              <option value="Script Writing">Script Writing</option>
+              <option value="Sports Writing">Sports Writing</option>
+              <option value="Subject Lines">Subject Lines</option>
+              <option value="Summarize">Summarize</option>
+              <option value="writing">Writing</option>
+            </select>
+
+        </div>
+
+        <br>
+
+        <label>Prompt Template</label>
+        <textarea name="Prompt" class="prompt" style="height: 120px;" placeholder="Prompt text including placeholders [TARGETLANGUAGE] or [PROMPT] replaced automagically by system" title="Prompt text including placeholders like [TARGETLANGUAGE] or [PROMPT] replaced automagically by system"></textarea>
+    
+        <label>Teaser</label>
+        <textarea name="Teaser" class="teaser" style="height: 71px;" placeholder="Create a keyword strategy and SEO content plan from 1 [KEYWORD]" title="Short teaser for this prompt template, e.g. 'Create a keyword strategy and SEO content plan from 1 [KEYWORD]'" ></textarea>
+            
+        <label>Prompt Hint</label>
+        <input name="PromptHint" class="prompthint" type="text" placeholder="[KEYWORD] or [your list of keywords, maximum ca. 8000]" title="Prompt hint for this prompt template, e.g. '[KEYWORD]' or '[your list of keywords, maximum ca. 8000]">
+
+        <label>Title</label>
+        <input name="Title" type="text" class="title" placeholder="Keyword Strategy" title="Short title for this prompt template, e.g. 'Keyword Strategy'">
+
+        <label>Author Name</label>
+        <input name="AuthorName" type="text" class="authorname" title="Author Name visible for all users" placeholder="Author Name">
+
+        <p class="note">Please be mindful of what you share, and do not include any confidential information, as we are not responsible for any actions taken by others with the information you choose to share.</p>
+
+      </div>
+    
+      <div class="button">
+        <button type="button" class="btn cancel">Cancel</button>
+        <!-- <button type="submit" class="btn save">Save Prompt</button> -->
+        <button class="btn save" style="vertical-align:middle"><span>Save Prompt </span></button>
+      </div>
+    
+    </div>
+
+</body>
+</html>
